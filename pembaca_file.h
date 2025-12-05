@@ -3,14 +3,14 @@
 
 #include <string>
 #include <vector>
+using namespace std;
 
 struct DataUMKM {
     int tahun;
-    std::string kbli;
-    std::string kategori;
+    string kategori_kbli;
+    string tipe_usaha;
     double jumlah;
 };
 
-std::vector<DataUMKM> bacaCSV(const std::string& namaFile);
-
+vector<DataUMKM> bacaCSV(const string& namaFile);
 #endif
