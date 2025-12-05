@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <map>
 #include "pembaca_file.h"
 #include "analisis.h"
@@ -6,6 +7,8 @@
 using namespace std;
 
 int main() {
+
+    cout << fixed << setprecision(0);
     vector<DataUMKM> data = bacaCSV("data_umkm.csv");
 
     if (data.empty()) {
@@ -14,12 +17,11 @@ int main() {
     }
 
     cout << "============================================================\n";
-    cout << "      SISTEM MONITORING UMKM PER KBLI (INDONESIA)\n";
+    cout << "      SISTEM MONITORING UMKM PER KBLI (JAWA TIMUR)\n";
     cout << "============================================================\n\n";
 
     cetakRingkasan(data);
 
-    //Total per tahun
     map<int,double> totalTahunan;
 
     for (auto& d : data) {
