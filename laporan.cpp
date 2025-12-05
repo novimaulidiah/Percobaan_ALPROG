@@ -1,57 +1,152 @@
 #include "laporan.h"
+#include "analisis.h"
 #include <iostream>
-#include <fstream>
-#include <algorithm>
+using namespace std;
 
-void cetakRingkasan(const std::vector<DataUMKM>& data) {
-    std::map<std::string, bool> kategori, tipe;
+//Ringkasan Data UMKM
+void cetakRingkasan(const vector<DataUMKM>& data) {
 
-    int minTahun = 9999, maxTahun = 0;
+    int jumlahBaris = data.size();
+    int tahunAwal = data.front().tahun;
+    int tahunAkhir = data.back().tahun;
 
-    for (auto &d : data) {
-        kategori[d.kbli] = true;
-        tipe[d.kategori] = true;
-        if (d.tahun < minTahun) minTahun = d.tahun;
-        if (d.tahun > maxTahun) maxTahun = d.tahun;
+    // mencari kategori unik
+    vector<string> kategoriUnik;
+
+    for (const auto& d : data) {
+        bool sudahAda = false;
+        for (const auto& k : kategoriUnik) {
+            if (k == d.kategori_kbli) {
+                sudahAda = true;
+                break;
+            }
+        }
+
+        if (!sudahAda) {
+            kategoriUnik.push_back(d.kategori_kbli);
+        }
     }
 
-    std::cout << "Jumlah baris data    : " << data.size() << "\n";
-    std::cout << "Jumlah tahun dicatat : " << (maxTahun - minTahun + 1)
-              << " (" << minTahun << " - " << maxTahun << ")\n";
-    std::cout << "Jumlah kategori KBLI : " << kategori.size() << "\n";
-    std::cout << "Jumlah tipe usaha    : " << tipe.size() << "\n";
+    cout << "Jumlah baris data    : " << jumlahBaris << endl;
+    cout << "Jumlah tahun dicatat : " 
+         << tahunAwal << " - " << tahunAkhir 
+         << " (" << (tahunAkhir - tahunAwal + 1) << " tahun)\n";
+    cout << "Jumlah kategori KBLI : " << kategoriUnik.size() << endl;
+    cout << "Jumlah tipe usaha    : 2 (Mikro dan Kecil)\n";
 }
 
-void cetakTotalTahunan(const std::map<int,double>& total) {
-    for (auto &t : total)
-        std::cout << t.first << " : " << (long long)t.second << "\n";
+//Total UMKM Per Tahun
+void cetakTotalTahunan(const map<int,double>& totalTahunan) {
+    cout << "\n=== TOTAL UMKM PER TAHUN ===\n";
+
+    for (auto& t : totalTahunan) {
+        cout << t.first << " : " << t.second << endl;
+    }
 }
 
+//Pertumbuhan Total
 void cetakPertumbuhan(double awal, double akhir) {
-    std::cout << "Pertumbuhan : " << akhir - awal
-              << " (" << hitungPertumbuhan(awal, akhir) << "%)\n";
+    double persen = hitungPertumbuhan(awal, akhir);
+    double selisih = akhir - awal;
+
+    cout << "Pertumbuhan : " << selisih 
+         << " (" << persen << "%)\n";
 }
 
-void cetakKategoriTerbesar(const std::vector<DataUMKM>& data) {
-    std::map<std::string, double> jumlah;
+//Kategori Terbesar Pada Tahun Terbaru
+void cetakKategoriTerbesar(const vector<DataUMKM>& data) {
 
-    int maxTahun = 0;
-    for (auto &d : data)
-        if (d.tahun > maxTahun) maxTahun = d.tahun;
+    int tahunTerbaru = data.back().tahun;
 
-    for (auto &d : data)
-        if (d.tahun == maxTahun)
-            jumlah[d.kbli + " (" + d.kategori + ")"] += d.jumlah;
+    vector<string> kategori;
+    vector<double> total;
 
-    std::vector<std::pair<std::string,double>> v(jumlah.begin(), jumlah.end());
-    std::sort(v.begin(), v.end(), [](auto &a, auto &b){ return a.second > b.second; });
+    for (const auto& d : data) {
 
-    for (int i = 0; i < 3 && i < v.size(); i++)
-        std::cout << i+1 << ". " << v[i].first << " : " << (long long)v[i].second << "\n";
+        if (d.tahun != tahunTerbaru) continue;
+
+        bool ada = false;
+        for (int i = 0; i < kategori.size(); i++) {
+            if (kategori[i] == d.kategori_kbli) {
+                total[i] += d.jumlah;
+                ada = true;
+                break;
+            }
+        }
+
+        if (!ada) {
+            kategori.push_back(d.kategori_kbli);
+            total.push_back(d.jumlah);
+        }
+    }
+
+    if (kategori.empty()) {
+        cout << "(Tidak ada data untuk tahun terbaru)\n";
+        return;
+    }
+
+    //sorting manual
+    for (int i = 0; i < kategori.size(); i++) {
+        for (int j = i + 1; j < kategori.size(); j++) {
+            if (total[j] > total[i]) {
+                swap(total[i], total[j]);
+                swap(kategori[i], kategori[j]);
+            }
+        }
+    }
+
+    cout << "\n=== KATEGORI TERBESAR TAHUN TERBARU ===\n";
+    for (int i = 0; i < kategori.size(); i++) {
+        cout << i+1 << ". " << kategori[i] 
+             << " : " << total[i] << endl;
+    }
 }
 
-void simpanLaporan(const std::string& namaFile, const std::string& isi) {
-    std::ofstream f(namaFile);
-    f << isi;
-    f.close();
+//PERTUMBUHAN PER KBLI
+void cetakPertumbuhanKBLI(const vector<DataUMKM>& data) {
+
+    vector<string> kbli;
+    vector<double> awal;
+    vector<double> akhir;
+
+    for (const auto& d : data) {
+        bool ada = false;
+
+        for (int i = 0; i < kbli.size(); i++) {
+            if (kbli[i] == d.kategori_kbli) {
+                akhir[i] = d.jumlah;
+                ada = true;
+                break;
+            }
+        }
+
+        if (!ada) {
+            kbli.push_back(d.kategori_kbli);
+            awal.push_back(d.jumlah);
+            akhir.push_back(d.jumlah);
+        }
+    }
+
+    int n = kbli.size();
+    double* growth = new double[n];
+
+    for (int i = 0; i < n; i++) {
+        growth[i] = hitungPertumbuhan(awal[i], akhir[i]);
+    }
+
+    int idxMax = 0, idxMin = 0;
+    for (int i = 1; i < n; i++) {
+        if (growth[i] > growth[idxMax]) idxMax = i;
+        if (growth[i] < growth[idxMin]) idxMin = i;
+    }
+
+    cout << "\n=== PERTUMBUHAN PER KBLI ===\n";
+
+    cout << "\nKBLI Pertumbuhan Tertinggi :\n";
+    cout << kbli[idxMax] << " : " << growth[idxMax] << "%\n";
+
+    cout << "\nKBLI Pertumbuhan Terendah :\n";
+    cout << kbli[idxMin] << " : " << growth[idxMin] << "%\n";
+
+    delete[] growth;
 }
