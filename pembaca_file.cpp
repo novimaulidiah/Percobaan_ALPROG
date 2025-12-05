@@ -1,4 +1,4 @@
-#include "pembaca_file.h"   // WAJIB! supaya DataUMKM dikenali
+#include "pembaca_file.h"  
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,7 +14,7 @@ vector<DataUMKM> bacaCSV(const string& nama_file) {
     }
 
     string baris;
-    getline(file, baris); // lewati header
+    getline(file, baris);
 
     while (getline(file, baris)) {
         stringstream ss(baris);
@@ -28,8 +28,8 @@ vector<DataUMKM> bacaCSV(const string& nama_file) {
         if (kolom.size() != 6) continue;
 
         DataUMKM d;
-        d.kategori_kbli = (kolom[2]);      
-        d.tipe_usaha    = kolom[3];   
+        d.kategori_kbli = (kolom[2]);   
+        d.tipe_usaha    = kolom[3];     
         d.tahun         = stoi(kolom[4]);
         d.jumlah        = stod(kolom[5]);
 
