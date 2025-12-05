@@ -3,11 +3,15 @@
 
 #include "pembaca_file.h"
 #include <map>
+#include <string>
+#include <vector>
+using namespace std;
 
-void cetakRingkasan(const std::vector<DataUMKM>& data);
-void cetakTotalTahunan(const std::map<int,double>& total);
-void cetakPertumbuhan(double awal, double akhir);
-void cetakKategoriTerbesar(const std::vector<DataUMKM>& data);
-void simpanLaporan(const std::string& namaFile, const std::string& isi);
+    void cetakRingkasan(const vector<DataUMKM>& data);
+    void cetakTotalTahunan(const map<int,double>& totalTahunan);
+    void cetakPertumbuhanKBLI(const vector<DataUMKM>& data);
+    void cetakPertumbuhan(double awal, double akhir);
+    void cetakKategoriTerbesar(const vector<DataUMKM>& data);
+    void simpanLaporan(const string& namaFile, const string& isi);
 
 #endif
