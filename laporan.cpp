@@ -140,7 +140,7 @@ void cetakPertumbuhanKBLI(const vector<DataUMKM>& data) {
         if (growth[i] < growth[idxMin]) idxMin = i;
     }
 
-    cout << "\n=== PERTUMBUHAN PER KBLI ===\n";
+    cout << "\n=== ANALISIS PERTUMBUHAN KBLI ===\n";
 
     cout << "\nKBLI Pertumbuhan Tertinggi :\n";
     cout << kbli[idxMax] << " : " << growth[idxMax] << "%\n";
