@@ -28,8 +28,8 @@ vector<DataUMKM> bacaCSV(const string& nama_file) {
         if (kolom.size() != 6) continue;
 
         DataUMKM d;
-        d.kategori_kbli = bersihkan(kolom[2]);      // Makanan, Minuman, dll
-        d.tipe_usaha    = kolom[3];      // Mikro / Kecil
+        d.kategori_kbli = (kolom[2]);      
+        d.tipe_usaha    = kolom[3];   
         d.tahun         = stoi(kolom[4]);
         d.jumlah        = stod(kolom[5]);
 
