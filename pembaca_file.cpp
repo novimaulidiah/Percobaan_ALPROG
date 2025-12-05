@@ -1,32 +1,37 @@
-#include "pembaca_file.h"
+#include "pembaca_file.h"   // WAJIB! supaya DataUMKM dikenali
+#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <iostream>
+using namespace std;
 
-std::vector<DataUMKM> bacaCSV(const std::string& namaFile) {
-    std::vector<DataUMKM> data;
-    std::ifstream file(namaFile);
+vector<DataUMKM> bacaCSV(const string& nama_file) {
+    vector<DataUMKM> data;
+    ifstream file(nama_file);
 
     if (!file.is_open()) {
-        std::cout << "Gagal membuka file!\n";
+        cout << "Gagal membuka file!" << endl;
         return data;
     }
 
-    std::string baris;
-    getline(file, baris); // skip header
+    string baris;
+    getline(file, baris); // lewati header
 
     while (getline(file, baris)) {
-        std::stringstream ss(baris);
-        std::string item;
+        stringstream ss(baris);
+        vector<string> kolom;
+        string temp;
+
+        while (getline(ss, temp, ',')) {
+            kolom.push_back(temp);
+        }
+
+        if (kolom.size() != 6) continue;
 
         DataUMKM d;
-
-        getline(ss, item, ','); // id
-        getline(ss, item, ','); // id kategori
-        getline(ss, d.kbli, ','); 
-        getline(ss, d.kategori, ',');
-        getline(ss, item, ','); d.tahun = stoi(item);
-        getline(ss, item, ','); d.jumlah = stod(item);
+        d.kategori_kbli = bersihkan(kolom[2]);      // Makanan, Minuman, dll
+        d.tipe_usaha    = kolom[3];      // Mikro / Kecil
+        d.tahun         = stoi(kolom[4]);
+        d.jumlah        = stod(kolom[5]);
 
         data.push_back(d);
     }
