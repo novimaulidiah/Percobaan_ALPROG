@@ -1,38 +1,44 @@
 #include <iostream>
 #include <map>
-#include <sstream>
-
 #include "pembaca_file.h"
 #include "analisis.h"
 #include "laporan.h"
+using namespace std;
 
 int main() {
-    std::vector<DataUMKM> data = bacaCSV("data_umkm.csv");
+    vector<DataUMKM> data = bacaCSV("data_umkm.csv");
 
     if (data.empty()) {
-        std::cout << "File kosong atau gagal dibaca.\n";
+        cout << "File kosong atau gagal dibaca.\n";
         return 0;
     }
 
-    std::cout << "============================================================\n";
-    std::cout << "      SISTEM MONITORING UMKM PER KBLI (INDONESIA)\n";
-    std::cout << "============================================================\n\n";
+    cout << "============================================================\n";
+    cout << "      SISTEM MONITORING UMKM PER KBLI (INDONESIA)\n";
+    cout << "============================================================\n\n";
 
     cetakRingkasan(data);
 
-    std::map<int,double> totalTahunan;
-    hitungTotalPerTahun(data, totalTahunan);
+    //Total per tahun
+    map<int,double> totalTahunan;
 
-    std::cout << "\n=== TOTAL UMKM PER TAHUN ===\n";
+    for (auto& d : data) {
+        totalTahunan[d.tahun] += d.jumlah;
+    }
+
+    cout << "\n";
     cetakTotalTahunan(totalTahunan);
 
     double awal = totalTahunan.begin()->second;
     double akhir = totalTahunan.rbegin()->second;
 
-    std::cout << "\n=== PERTUMBUHAN ===\n";
+    cout << "\n";
+    cetakPertumbuhanKBLI(data);
+
+    cout << "\n=== PERTUMBUHAN ===\n";
     cetakPertumbuhan(awal, akhir);
 
-    std::cout << "\n=== KATEGORI TERBESAR TAHUN TERBARU ===\n";
+    cout << "\n";
     cetakKategoriTerbesar(data);
 
     return 0;
